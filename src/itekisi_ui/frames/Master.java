@@ -1,24 +1,22 @@
 package itekisi_ui.frames;
 
-import javax.swing.*;
-import javax.swing.border.Border;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.KeyEvent;
+import itekisi_ui.AuthUI;
 
-public class Master extends JFrame implements ActionListener{
+import javax.swing.*;
+import java.awt.event.*;
+
+public class Master extends JFrame implements ActionListener, ItemListener {
 
     public JMenuBar menuBar;
     JMenu menu,submenu;
     JMenuItem menuItem;
     JRadioButtonMenuItem rbMenuItem;
-    JButton button = new JButton("Login");
-
-    //Icon loginIcon = new ImageIcon("");
+    JButton loginButton = new JButton("Login");
 
     JCheckBoxMenuItem cbMenuItem;
+
+
+
 
     //create the menubar in the constructor
     public Master(){
@@ -95,22 +93,26 @@ public class Master extends JFrame implements ActionListener{
 
         menuBar.add(Box.createHorizontalGlue());
         menu.getAccessibleContext().setAccessibleDescription("Menu, no sh!t done");
-        menuBar.add(button);
+        menuBar.add(loginButton);
         this.setJMenuBar(menuBar);
 
     }
 
-
-
-
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(e.getSource().equals(menuItem)){
+        if(e.getSource().equals(menuItem.getComponent())){
             JOptionPane.showMessageDialog(this,"You clicked something");
+        }
+        if (e.getSource().equals(loginButton)){
+             new AuthUI();
         }
     }
 
-    public void itemStateChanged(ItemEvent e){
 
+    @Override
+    public void itemStateChanged(ItemEvent e) {
+        if (e.getStateChange()==ItemEvent.SELECTED){
+
+        }
     }
 }

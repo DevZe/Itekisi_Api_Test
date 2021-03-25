@@ -1,29 +1,31 @@
-package itekisi_authentication;
+package itekisi_api.itekisi_data;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLParameters;
 import java.io.IOException;
-import java.net.*;
+import java.net.ProxySelector;
+import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
-import java.util.Base64;
 import java.util.Map;
 import java.util.concurrent.Executors;
 
-public class ItekisiHttpClientAuthenticator {
+public class ItekisiRegister {
 
+     static HttpClient client = null;
+     HttpRequest request ;
+     HttpResponse<String> response;
 
-    HttpRequest  request;
-    HttpClient client;
-    HttpResponse<String> response;
+    //this method posts a new user
 
+    public int Register(String url, Map<String,String> data) throws NoSuchAlgorithmException, IOException, InterruptedException {
 
-//this method gets
-    public int dataAuthentication(String url,Map<String,String> data) throws NoSuchAlgorithmException, IOException, InterruptedException {
+        //setup a client set a new builder and httpclient parameters
         client = HttpClient
                 .newBuilder()
                 .connectTimeout(Duration.ofSeconds(20))
@@ -39,19 +41,18 @@ public class ItekisiHttpClientAuthenticator {
         request = HttpRequest.newBuilder()
                 .POST(ofFormData(data))
                 .uri(URI.create(String.format(url)))
-                .setHeader("content-Type","application/json")
-                .setHeader("client_id","Itekisi_Api_Test")
+                .header("content-Type","application/x-www-form-urlencoded")
+                .setHeader("User-Agent","Itekisi_Api_Test")
                 .build();
 
         response = client.send(request,HttpResponse.BodyHandlers.ofString());
 
-        System.out.println(response.statusCode());
-        System.out.println(response.body());
-
+        //System.out.println(response.statusCode());
 
         return response.statusCode();
     }
 
+    //this is the method that forms our data to string
     public HttpRequest.BodyPublisher ofFormData(Map<String,String> data){
         StringBuilder builder =new StringBuilder();
         for(Map.Entry<String,String> entry: data.entrySet()){
@@ -64,5 +65,4 @@ public class ItekisiHttpClientAuthenticator {
         }
         return HttpRequest.BodyPublishers.ofString(builder.toString());
     }
-
 }

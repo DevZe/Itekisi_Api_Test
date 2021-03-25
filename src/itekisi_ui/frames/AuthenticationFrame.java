@@ -1,17 +1,21 @@
 package itekisi_ui.frames;
 
-import itekisi_ui.SignUp;
+import itekisi_models.User;
+import itekisi_ui.FillUp;
 import itekisi_ui.datapackage.LoginInfo;
+import itekisi_ui.datapackage.RegisterInfo;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ContainerEvent;
-import java.awt.event.ContainerListener;
+import java.awt.event.*;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
-public class AuthenticationFrame extends JFrame  implements ActionListener {
+public class AuthenticationFrame extends JFrame implements ActionListener, ItemListener {
 
     //local variables
     JPanel LoginContainer;
@@ -35,7 +39,6 @@ public class AuthenticationFrame extends JFrame  implements ActionListener {
     final Border border = BorderFactory.createEmptyBorder(100,200,100,200);
     JPanel contentPane,loginPanel,signUpPanel;
 
-
     //signup variables
     JLabel emailLabel = new JLabel("Email");
     JLabel passwordlbl = new JLabel("Password");
@@ -48,13 +51,16 @@ public class AuthenticationFrame extends JFrame  implements ActionListener {
     JPasswordField confirmPasswordField = new JPasswordField();
 
     JButton SignUpButton = new JButton("SignUp");
-    JButton loginBtn = new JButton("Login");
+    JButton loginBtn = new JButton("SignIn");
 
     JButton loginPanelButton = new JButton("Login Page");
     JButton registerPanelButton = new JButton("SignUp Page");
 
-    SignUp signUp;
+    RegisterInfo registerInfo;
     LoginInfo loginInfo;
+
+    User user;
+
 
     public AuthenticationFrame(){
         contentPane = new JPanel();
@@ -70,6 +76,8 @@ public class AuthenticationFrame extends JFrame  implements ActionListener {
         cl.show( cards,"Login Panel");
 
     }
+
+    //Setting Container's LayoutManager and adding button actionListener
     public void setLayoutManager(){
 
         LoginContainer = new JPanel();
@@ -117,16 +125,23 @@ public class AuthenticationFrame extends JFrame  implements ActionListener {
         contentPane.add(cards);
         contentPane.add(controlPanel);
 
+
         loginPanelButton.addActionListener(this::actionPerformed);
-        registerPanelButton.addActionListener(this::actionPerformed);
+
+        //registerPanelButton.addActionListener(this::actionPerformed);
         loginButton.addActionListener(this::actionPerformed);
         SignUpBtn.addActionListener(this::actionPerformed);
         loginBtn.addActionListener(this::actionPerformed);
         SignUpButton.addActionListener(this::actionPerformed);
+        showLPassword.addItemListener(this::itemStateChanged);
+        showRPassword.addItemListener(this::itemStateChanged);
+        //SignUpButton.addActionListener(new LoginActionListener());
 
     }
+
+    //Setting location and Size of each components using setBounds() methods
     public  void setLocationAndSize(){
-        //Setting location and Size of each components using setBounds() methods
+
 
 
         //Login
@@ -156,14 +171,15 @@ public class AuthenticationFrame extends JFrame  implements ActionListener {
         /*cards.setSize(getMaximumSize().width,getMaximumSize().height);*/
     }
 
+    //Adding components to each JPanel
+    //login panel
     public void addComponentsToContainer(){
-        //Adding components to each JPanel
-        //login panel
+
         LoginContainer.add(userLabel);
         LoginContainer.add(userTextfield);
 
         LoginContainer.add(passwordlbl);
-        LoginContainer.add(passwordFld);
+        LoginContainer.add(passwordField);
 
         LoginContainer.add(showLPassword);
         LoginContainer.add(emptyLCell);
@@ -177,7 +193,7 @@ public class AuthenticationFrame extends JFrame  implements ActionListener {
         RegisterContainer.add(emailTextfield);
 
         RegisterContainer.add(passwordLabel);
-        RegisterContainer.add(passwordField);
+        RegisterContainer.add(passwordFld);
 
         RegisterContainer.add(confirmPasswordLabel);
         RegisterContainer.add(confirmPasswordField);
@@ -185,27 +201,92 @@ public class AuthenticationFrame extends JFrame  implements ActionListener {
         RegisterContainer.add(showRPassword);
         RegisterContainer.add(emptyRCell);
 
-        RegisterContainer.add(loginBtn);
         RegisterContainer.add(SignUpButton);
+        RegisterContainer.add(loginBtn);
 
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        // THIS IS FOR TESTING PURPOSES
 
-        if (e.getSource().equals(loginButton)) {
+
+//login action lister
+        if (e.getSource().equals(loginButton)){
+            loginInfo = new LoginInfo();
+            char[] passChars = passwordField.getPassword();
+            String pass = new String(passChars);
+
+           // passwordField.getPassword().equals("");
+            if (loginInfo!=null) {
+               // loginInfo = new LoginInfo();
+
+                //String pass = String.copyValueOf(passchars,1,2);
+               boolean canLogin = loginInfo.canLoggin(userTextfield.getText(),pass);
+               if (canLogin==true){
+                   try {
+
+                       if (loginInfo.login()==1){
+                           System.out.println(loginInfo.getUsername() + " is Logged In");
+
+                       }else{
+                           passwordField.updateUI();
+                           System.out.println("Wrong credentials,please try again ");
+                           Arrays.fill(passwordField.getPassword(),'0');
+                           passwordField.setText("");
+                       }
+                   } catch (InterruptedException interruptedException) {
+                       interruptedException.printStackTrace();
+                   } catch (NoSuchAlgorithmException noSuchAlgorithmException) {
+                       noSuchAlgorithmException.printStackTrace();
+                   } catch (IOException ioException) {
+                       ioException.printStackTrace();
+                   }
+               }
+            }
 
         }
 
+//register action listener
         if (e.getSource().equals(SignUpButton)) {
+            //check if the inputFields are not empty
+            if(passwordFld.getPassword()!=null || emailTextfield.getText()!=null || confirmPasswordField.getPassword()!=null)
+            registerInfo = new RegisterInfo();
+            String username = emailTextfield.getText();
+            char[] passCharacters = passwordFld.getPassword();
+            String passText = new String(passCharacters);
+            registerInfo.setConfirmPassword(passText);
+            if(registerInfo!=null){
+                try {
+                    int statcode = registerInfo.signUpNewUser(username,passText);
+                    int statcode2 = registerInfo.createUserId(username);
+                    if((statcode==1)&&(statcode2==1)){
+                        System.out.println(registerInfo.getUsername() + " You are registered");
+                        FillUp frame = new FillUp();
+
+                        /*Map<String,String> user = new HashMap<>();
+                        user.put("email", username);*/
+
+                        frame.frame.setUserProfileId(username);
+                        //frame.FillUp;
+                        this.dispose();
+                    }else if((statcode==0)&&(statcode2==0)){
+                        System.out.println(" Something went wrong! Try again");
+                    }else {
+                        System.out.println(" SHit happend");
+                    }
+                } catch (InterruptedException interruptedException) {
+                    interruptedException.printStackTrace();
+                } catch (NoSuchAlgorithmException noSuchAlgorithmException) {
+                    noSuchAlgorithmException.printStackTrace();
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
+            }
 
         }
-        if (e.getSource().equals(registerPanelButton)){
-            cl.show(cards, "SignUp Panel");
-        }
-        if (e.getSource().equals(loginPanelButton)){
-            cl.show(cards,"Login Panel");
-        }
+
+
         if (e.getSource().equals(loginBtn)){
             cl.show(cards,"Login Panel");
         }
@@ -213,4 +294,20 @@ public class AuthenticationFrame extends JFrame  implements ActionListener {
             cl.show(cards, "SignUp Panel");
         }
     }
-}
+
+    @Override
+    public void itemStateChanged(ItemEvent e) {
+            //char Original = passwordField.getEchoChar();
+            if(e.getStateChange()== ItemEvent.SELECTED){
+                confirmPasswordField.setEchoChar((char)0);
+                passwordFld.setEchoChar((char)0);
+                passwordField.setEchoChar((char)0);
+
+            }else {
+                passwordFld.setEchoChar('*');
+                passwordField.setEchoChar('*');
+                confirmPasswordField.setEchoChar('*');
+            }
+        }
+    }
+

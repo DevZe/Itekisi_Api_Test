@@ -16,5 +16,6 @@
     <orderEntry type="library" name="jackson-core-2.12.22" level="project" />
     <orderEntry type="library" name="jackson-databind-2.12.2" level="project" />
     <orderEntry type="library" name="apache-httpcomponents-httpcore" level="project" />
+    <orderEntry type="library" name="servlet-api" level="project" />
   </component>
 </module>

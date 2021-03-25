@@ -19,12 +19,14 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 
 public class ApiClient implements IAPIClient{
-    private static HttpClient client = null;
+    HttpClient client;
     public HttpRequest request ;
     public HttpResponse<String> response;
+    public String body="";
+    int statusCode = 0;
 
 //this is a taxi post method
-    public void getAsync(String url) throws IOException, InterruptedException, NoSuchAlgorithmException {
+    public String getAsync(String url) throws IOException, InterruptedException, NoSuchAlgorithmException {
         client = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(20))
                 .executor(Executors.newFixedThreadPool(3))
@@ -49,6 +51,7 @@ public class ApiClient implements IAPIClient{
          response = completableFuture.join();
 
         assert(response.statusCode()) == 200;
+        return response.body();
        // System.out.println("Body "+ response.body());
     }
 
@@ -78,13 +81,14 @@ public class ApiClient implements IAPIClient{
 
          response = client.send(request,HttpResponse.BodyHandlers.ofString());
 
-         System.out.println(response.statusCode());
-         System.out.println(response.body());
+         statusCode = response.statusCode();
+         body = response.body();
+
         return response.statusCode();
     }
 
 
-public HttpRequest.BodyPublisher ofFormData(Map<String,String> data){
+    public HttpRequest.BodyPublisher ofFormData(Map<String,String> data){
         StringBuilder builder =new StringBuilder();
         for(Map.Entry<String,String> entry: data.entrySet()){
             if (builder.length() > 0){
@@ -92,7 +96,7 @@ public HttpRequest.BodyPublisher ofFormData(Map<String,String> data){
             }
             builder.append(URLEncoder.encode(entry.getKey().toString(), StandardCharsets.UTF_8));
             builder.append("=");
-            builder.append(URLEncoder.encode(entry.getValue().toString()));
+            //builder.append(URLEncoder.encode(entry.getValue().toString()));
         }
         return HttpRequest.BodyPublishers.ofString(builder.toString());
     }

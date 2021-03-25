@@ -1,5 +1,7 @@
 import itekisi_ui.AuthUI;
+import itekisi_ui.FillUp;
 import itekisi_ui.frames.AuthenticationFrame;
+import itekisi_ui.frames.FillUpFrame;
 import itekisi_ui.frames.Master;
 
 import javax.swing.*;
@@ -155,6 +157,10 @@ public class Main {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);*/
 
-        new AuthUI();
+       /*FillUp fillUp =new FillUp();
+       fillUp.FillingUp();*/
+
+      new AuthUI();
+
     }
 }
