@@ -1,14 +1,11 @@
-import itekisi_authentication.ItekisiAuthenticationData;
-import itekisi_data.ProfileData;
-import itekisi_data.TaxiData;
-import itekisi_models.Profile;
-import itekisi_signup.ItekisiRegisterData;
+import itekisi_ui.AuthUI;
+import itekisi_ui.frames.AuthenticationFrame;
+import itekisi_ui.frames.Master;
 
+import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class Main {
 
@@ -111,13 +108,53 @@ public class Main {
 
 
         //Get a list of profiles
-        List<Profile> profiles ;
+       /* List<Profile> profiles ;
         ProfileData profileData = new ProfileData();
 
         profiles = profileData.getProfileData();
         for (int i = 0; i < profiles.size(); i++) {
             System.out.println("Profile :  " + i + " : " + profiles.get(i).getSurname().toString());
-        }
+        }*/
+/**************************************************************************************************************/
+//THE UI TEST
+/***********************************************/
+        //Login Frame
 
+       /* Login login = new Login();
+        login.logginIn();*/
+
+
+        //Sign Up Frame
+        /*SignUp signUp = new SignUp();
+        signUp.SigningUp();*/
+
+        //FillUp Frame
+        /*FillUp fillUp = new FillUp();
+        fillUp.FillingUp();*/
+
+
+        //Using JPanels to navigate
+
+       /* EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                AuthenticationFrame frame = new AuthenticationFrame();
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.pack();
+                frame.setLocationRelativeTo(null);
+                frame.setVisible(true);
+            }
+        });*/
+
+        /*Master master = new Master();
+        JFrame frame = new JFrame();
+        frame.setJMenuBar(master.menuBar);
+        frame.setTitle("Master");
+        frame.setVisible(true);
+        frame.setBounds(500, 50, 500, 600);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setResizable(false);*/
+
+        new AuthUI();
     }
 }
